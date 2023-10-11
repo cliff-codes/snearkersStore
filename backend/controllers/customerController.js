@@ -6,11 +6,14 @@ dotenv.config()
 
 export const signUpCustomer = async(req, res) => {
     const {name, email, password} = req.body
+    const hashedPassword = bcrypt.hashSync(password,10)
     try {
-        const hashedPassword = bcrypt.hashSync(password,10)
         const newCustomer = new Customer({name, email, password: hashedPassword})
         await newCustomer.save()
-        res.status(201).json(newCustomer)
+        const token = jwt.sign({_id: newCustomer._id},process.env.JWT_SECRET)
+        const expiryDate = new Date(Date.now() + 3600000)
+        const {password, ...rest} = newCustomer._doc
+        res.cookie('access_token',token, {httpOnly: true, expires: expiryDate}).status(200).json(rest)
     } catch (error) {
         console.log(error)
     }
