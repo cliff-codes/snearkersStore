@@ -28,6 +28,10 @@ const productSchema = new mongoose.Schema({
     qtyInStock: {
         type: Number,
         required: true
+    },
+    store:{
+        type: mongoose.Schema.Types.ObjectId,
+        ref : "Store"
     }
 })
 export const Product = mongoose.model("Product", productSchema)

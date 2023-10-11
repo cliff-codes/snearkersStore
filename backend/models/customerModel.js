@@ -18,6 +18,12 @@ const customerSchema = new mongoose.Schema({
             type: mongoose.Schema.Types.ObjectId,
             ref: "Product"
         }
+    ],
+    stores: [
+        {
+            type: mongoose.Schema.Types.ObjectId,
+            ref: "Store"
+        }
     ]
 })
 export const Customer = mongoose.model("Customer", customerSchema)

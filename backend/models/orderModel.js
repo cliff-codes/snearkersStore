@@ -10,5 +10,4 @@ const orderSchema = new mongoose.Schema({
         ref: "Product"
     }]
 })
-
 export const Order = mongoose.model("Order", orderSchema)
