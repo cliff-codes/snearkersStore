@@ -32,3 +32,23 @@ export const loginCustomer = async(req, res) => {
         res.status(500).json("login failure")
     }
 }
+
+export const deleteCustomer = async (req, res) => {
+    const customerId = req.customer._id;
+    try {
+        const deletedCustomer = await Customer.findByIdAndDelete(customerId);
+        
+        if (!deletedCustomer) {
+            throw new Error("This customer does not exist");
+        }
+        console.log(deletedCustomer);
+        res.clearCookie('access_token').status(200).json("User Deleted successfully");
+    } catch (error) {
+        res.clearCookie('access_token').status(500).json({ error: error.message });
+    }
+};
+
+
+export const logoutCustomer = async(req,res) => {
+    res.clearCookie('access_token').status(200).json ("Signout success")
+}
