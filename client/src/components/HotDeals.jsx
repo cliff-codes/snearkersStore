@@ -8,7 +8,7 @@ const HotDeals = () => {
 
     
   return (
-    <Container>
+    <Container sx={{mb: "16px"}}>
         <Box>
             <Typography variant='h6' color={'secondary.main'}>Hot Deals</Typography>
             <ContentLoader/> 
