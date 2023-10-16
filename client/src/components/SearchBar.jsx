@@ -12,7 +12,7 @@ const SearchBar = () => {
                 height: "40px",
                 borderRadius: "4px",
                 padding: "0 8px",
-                width: "250px"
+                width: "300px"
             }}/>
             <ButtonBase  sx={{
                 width: "60px",
