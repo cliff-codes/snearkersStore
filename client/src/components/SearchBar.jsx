@@ -3,7 +3,7 @@ import React from 'react'
 
 const SearchBar = () => {
   return (
-    <Box width={"100%"} display={'flex'} justifyContent={"center"}>
+    <Box width={"100%"} display={'flex'} justifyContent={"center"} overflow={"hidden"}>
         <Box display={'flex'} alignItems={'center'} mt={"16px"}>
             <InputBase placeholder='find a pair of sneakers' sx={{
                 border: '1px solid',
@@ -12,7 +12,7 @@ const SearchBar = () => {
                 height: "40px",
                 borderRadius: "4px",
                 padding: "0 8px",
-                width: "300px"
+                width: "260px"
             }}/>
             <ButtonBase  sx={{
                 width: "60px",
