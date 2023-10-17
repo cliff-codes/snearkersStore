@@ -1,8 +1,7 @@
 import {BrowserRouter as Router, Routes, Route, BrowserRouter} from "react-router-dom"
 import Nav from "./components/Nav"
 import Home from "./pages/Home"
-import SearchBar from "./components/SearchBar"
-import { Container } from "@mui/material"
+import SignUp from "./pages/SignUp"
 function App() {
 
   return (
@@ -10,6 +9,7 @@ function App() {
         <Nav/>
       <Routes>
         <Route path="/" element = {<Home/>}/>
+        <Route path="/sign-up" element = {<SignUp/>}/>
       </Routes>
     </Router>
   ) 

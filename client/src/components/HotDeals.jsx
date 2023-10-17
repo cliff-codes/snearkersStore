@@ -3,9 +3,6 @@ import React from 'react'
 import ContentLoader from './ContentLoader'
 
 const HotDeals = () => {
-    const theme = useTheme()
-    const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'))
-
     
   return (
     <Container sx={{mb: "16px"}}>
