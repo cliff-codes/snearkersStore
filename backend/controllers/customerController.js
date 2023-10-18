@@ -15,7 +15,7 @@ export const signUpCustomer = async(req, res) => {
         const {password, ...rest} = newCustomer._doc
         res.cookie('access_token',token, {httpOnly: true, expires: expiryDate}).status(200).json(rest)
     } catch (error) {
-        console.log(error)
+        res.status(500).json(error)
     }
 }  
 

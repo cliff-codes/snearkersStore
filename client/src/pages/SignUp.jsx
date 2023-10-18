@@ -1,9 +1,19 @@
 import React, { useState } from 'react'
-import { Box, Container, InputLabel, InputBase, Typography, Button } from '@mui/material'
+import { Box, Container, InputLabel, InputBase, Typography, Button, CircularProgress } from '@mui/material'
 import validator from 'validator'
 import axios from 'axios'
+import { useDispatch, useSelector } from 'react-redux'
+import { signInStart, signInSuccess, signInFailure } from '../redux/user/userSlice'
+import { useNavigate } from 'react-router-dom'
+
+
 
 const SignUp = () => {
+    const dispatch = useDispatch()
+    const navigate = useNavigate()
+    const loading = useSelector((state) => state.user.loading)
+    const error = useSelector((state) => state.user.error)
+    
     const [formData, setFormData] = useState({
         name: null,
         email: null,
@@ -46,13 +56,22 @@ const SignUp = () => {
         })
     }
     const handleSubmit = async() => {
+        dispatch(signInStart())
+        
         const url = '/api/v1/signUp'
         console.log('signing up user')
         try {
             const res = await axios.post(url,formData)
             console.log(res)
+            if(res.status === 200){
+                const user = await res.data
+                dispatch(signInSuccess(user)) 
+                navigate('/')
+            }
+
         } catch (error) {
-            console.log(error)
+            dispatch(signInFailure(error.message))
+            console.log(error.message)
         }
         
     }
@@ -133,10 +152,12 @@ const SignUp = () => {
                     outline: "none"
                 }
                 }}
-                    disabled = {!formReadyToSubmit}
+                    disabled = {!formReadyToSubmit && !loading}
                     type='submit'
                     onClick={handleSubmit}
-                >sign-up</Button>
+                >
+                    {loading ? <CircularProgress size={"18px"}/> : "sign-up"}
+                </Button>
                 <Button sx={{
                     textTransform: "lowercase",
                     border: "1px solid",

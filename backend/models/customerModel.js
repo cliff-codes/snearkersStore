@@ -8,7 +8,12 @@ const customerSchema = new mongoose.Schema({
     },
     email: {
         type: String,
-        required: true
+        unique: true,
+        required: true,
+    },
+    profilePic : {
+        type: String,
+        default: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSAkjktNk_waKZ6A064JikKQRYLxoKPNIUR_g&usqp=CAU"
     },
     password: {
         type: String,
