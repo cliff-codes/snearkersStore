@@ -1,5 +1,7 @@
 import React, { useState } from 'react'
 import { Box, Container, InputLabel, InputBase, Typography, Button } from '@mui/material'
+import validator from 'validator'
+import axios from 'axios'
 
 const SignUp = () => {
     const [formData, setFormData] = useState({
@@ -9,11 +11,15 @@ const SignUp = () => {
         reTypePassword: null,
     })
     const [formReadyToSubmit, setFormReadyToSubmit] = useState(false)
-    const [validPassword, setValidPassword] = useState(false)
+    const [isValidEmail, setIsValidEmail] = useState(false)
     
     //check if all input feilds are filled
-    function arePropertiesValid(obj) {
-        return Object.values(obj).every(val => val !== null && val !== '' && val !== undefined);
+    function arePropertiesValid(obj) { 
+        const value = Object.values(obj).every(val => val !== null && val !== '' && val !== undefined)
+        //checking specifically for valid password
+        const validPass = obj.password === obj.reTypePassword
+
+        return value && validPass;
     }
      
     
@@ -21,24 +27,33 @@ const SignUp = () => {
         setFormData(prev => {
             const newFormData = {...prev, [e.target.id]: e.target.value}
             const bool = arePropertiesValid(newFormData)
-            
-            //checking for password input
-            if(newFormData.password && newFormData.reTypePassword && newFormData.password === newFormData.reTypePassword){
-                setValidPassword(true)
-            }else{
-                setValidPassword(false)
+
+            //validate email
+            let isValid = false
+
+            if(newFormData.email){
+                isValid = true
             }
 
-            setFormReadyToSubmit(bool)
+            if(e.target.id === 'email'){
+               isValid = validator.isEmail(newFormData.email)
+               setIsValidEmail(isValid)
+               console.log(newFormData.email, isValid)
+               setFormReadyToSubmit(bool && isValid)
+            }
+            setFormReadyToSubmit(bool && isValid)
             return newFormData
         })
     }
-    console.log(formData)
-    console.log(formReadyToSubmit)
-
-    const handleSubmit = () => {
-        console.log('form submitted')
-        //checking if all input the feilds are filled
+    const handleSubmit = async() => {
+        const url = '/api/v1/signUp'
+        console.log('signing up user')
+        try {
+            const res = await axios.post(url,formData)
+            console.log(res)
+        } catch (error) {
+            console.log(error)
+        }
         
     }
 
@@ -71,7 +86,9 @@ const SignUp = () => {
                 <Box>
                     <InputLabel>email</InputLabel>
                     <InputBase 
-                        onChange={handleFormData}
+                        onChange={(e) => {
+                            handleFormData(e)
+                        }}
                         type='email'
                         id='email' sx={{
                         bgcolor: 'secondary.light',
@@ -116,7 +133,7 @@ const SignUp = () => {
                     outline: "none"
                 }
                 }}
-                    disabled = {!formReadyToSubmit && !validPassword}
+                    disabled = {!formReadyToSubmit}
                     type='submit'
                     onClick={handleSubmit}
                 >sign-up</Button>
