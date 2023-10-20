@@ -4,6 +4,7 @@ import Home from "./pages/Home"
 import SignUp from "./pages/SignUp"
 import Profile from "./pages/Profile"
 import Error from "./pages/Error"
+import CreateStore from "./pages/CreateStore"
 function App() {
 
   return (
@@ -13,6 +14,7 @@ function App() {
         <Route path="/" element = {<Home/>}/>
         <Route path="/profile" element = {<Profile/>}/>
         <Route path="/sign-up" element = {<SignUp/>}/>
+        <Route path="/create-store" element = {<CreateStore/>}/>
         <Route path="*" element = {<Error/>}/>
       </Routes>
     </Router>
