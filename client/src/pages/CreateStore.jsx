@@ -2,12 +2,88 @@ import { Box, Button, Container, Input, InputBase, InputLabel, Typography, useMe
 import React, { useRef, useState } from 'react'
 import redSneakers from "../assets/readSneakers.png"
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
+import {app} from '../firebase'
+import {getDownloadURL, getStorage, ref, uploadBytesResumable} from 'firebase/storage'
+import axios from 'axios';
 
 const CreateStore = () => {
     const theme = useTheme()
     const isSmallScreen = useMediaQuery(theme.breakpoints.down('sm'))
     const [storeCoverImg, setStoreCoverImg] = useState()
     const fileRef = useRef(null)
+    const [formData, setFormData] = useState({})
+    const [uploadPercentage, setuploadPercentage] = useState(0)
+    const [uploadError, setuploadError] = useState()
+
+    const handleFormData = (e) => {
+        setFormData({...formData, [e.target.id] : e.target.value})
+    }
+    console.log(formData)
+
+    //handling data submit
+    const handleSubmit = async() => {
+        //store cover img in firestore
+        handleImgUpload(formData.coverImg)
+        
+    }
+    console.log(uploadPercentage)
+    //handling image upload for coverImages.
+    // const handleImgUpload = (image) => {
+    //     const storage = getStorage(app)
+    //     const fileName = new Date().getTime() + image.name
+    //     const storageRef = ref(storage, fileName)
+    //     const uploadTask = uploadBytesResumable(storageRef, image)
+        
+
+    //     uploadTask.on(
+    //         'state_changed',
+    //         (snapshot) => {
+    //             const progress = (snapshot.bytesTransferred/ snapshot.totalBytes) * 100;
+    //             setuploadPercentage(Math.round(progress))
+                
+    //         },
+    //         (error) => {
+    //             setuploadError(error)   
+    //             console.log("Error uploading file: ", error)
+    //         },
+    //         () => {
+    //             getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
+    //                 setFormData({...formData, coverImg: downloadUrl})
+    //                 console.log(formData)
+    //             })
+    //         }
+    //     )
+    // }
+
+
+
+    const handleImgUpload = (image) => {
+    const storage = getStorage(); // Remove 'app' from here, as it's not defined in your code
+    const fileName = new Date().getTime() + image.name;
+    const storageRef = ref(storage, `images/${fileName}`);
+    const uploadTask = uploadBytesResumable(storageRef, image);
+
+    uploadTask.on(
+        'state_changed',
+        (snapshot) => {
+        const progress = (snapshot.bytesTransferred / snapshot.totalBytes) * 100;
+        setuploadPercentage(Math.round(progress));
+        },
+        (error) => {
+        setuploadError(error);
+        console.log("Error uploading file: ", error);
+        },
+        () => {
+        getDownloadURL(storageRef).then((downloadUrl) => { // Pass the storage reference here
+            setFormData({...formData, coverImg: downloadUrl});
+            console.log(formData);
+        });
+        }
+    );
+    };
+
+
+    
 
   return (
     <Container sx={{
@@ -26,11 +102,14 @@ const CreateStore = () => {
                         borderRadius: '5px',
                         minWidth: '300px',
                         pl: '4px'
-                    }} id='store-name' />
+                    }} id='storeName' onChange={handleFormData}/>
                 </Box>
-                <Box>
+                <Box onClick = {(e) => {
+                    console.log('clicked')
+                    fileRef.current.click()
+                }}>
                     {/* cover image for store */}
-                    <input type='file' ref={fileRef} accept='image/*' onChange={(e) => {
+                    <input id='coverImg' type='file' ref={fileRef} accept='image/*' hidden = {'true'} onChange={(e) => {
                         const file = e.target.files[0]
                         const reader = new FileReader()
                         
@@ -41,8 +120,9 @@ const CreateStore = () => {
 
                         if(file){
                             reader.readAsDataURL(file)
+                            setFormData({...formData, [e.target.id]: file })
+                            console.log(formData.coverImg)
                         }
-
                     }}/>
                     <Box width={'100%'} border={'1px solid '} display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={'100px'} borderColor={'primary.main'} borderRadius={'4px'} sx={{
                        backgroundImage: `url(${storeCoverImg})`,
@@ -63,7 +143,10 @@ const CreateStore = () => {
                     },
                     outline: 'none',
                     textTransform: 'lowercase'
-                }}>create store</Button>
+                }}
+                    disabled = {formData.storeName && formData.coverImg ? false : true}
+                    onClick={handleSubmit}
+                >create store</Button>
             </Box>
         </Box>
         {!isSmallScreen ? <Box width={'50%'} minHeight={'500px'} height={'100%'} sx={{
