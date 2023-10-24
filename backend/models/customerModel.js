@@ -1,5 +1,6 @@
 import mongoose from "mongoose"
 import bcrypt from "bcrypt"
+import { errorHandler } from "../utils/Error.js"
 
 const customerSchema = new mongoose.Schema({
     name : {
@@ -34,7 +35,7 @@ const customerSchema = new mongoose.Schema({
 })
 
 
-customerSchema.statics.findByCredentials = async(email, password) => {
+customerSchema.statics.findByCredentials = async(email, password, next) => {
     const customer = await Customer.findOne({email})
     if(!customer){
         throw new Error("Unable to login")
@@ -42,7 +43,8 @@ customerSchema.statics.findByCredentials = async(email, password) => {
 
     const isMatch = bcrypt.compareSync(password, customer.password)
     if(!isMatch){
-        throw new Error("Invalid credentials")
+        console.log("wrong password")
+        return next(errorHandler(404, "invalid credentials"))
     }
     return customer
 }

@@ -16,7 +16,7 @@ const ProfileAndSignIn = () => {
             backgroundRepeat: "no-repeat"
           }}>
 
-          </Box> : <Link to={'/sign-up'} style={{
+          </Box> : <Link to={'/login'} style={{
           color: "inherit",
           textDecoration: "none"
         }}> <ButtonBase>sign-In</ButtonBase>

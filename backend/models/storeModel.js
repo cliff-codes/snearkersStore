@@ -3,7 +3,8 @@ import mongoose from "mongoose"
 const storeSchema = new mongoose.Schema({
     name : {
         type: String,
-        required: true
+        required: true,
+        unique: true
     },
     orders: [
         {
@@ -18,10 +19,11 @@ const storeSchema = new mongoose.Schema({
         }
     ],
     owner: {
-        type: String,
+        type: mongoose.Schema.Types.ObjectId,
+        ref: "Customer",
         required: true
     },
     coverImg: String
 },{timestamps: true})
 
-export const Store = mongoose.Model("Store", storeSchema)
+export const Store = mongoose.model("Store", storeSchema)

@@ -2,6 +2,7 @@ import { Customer } from "../models/customerModel.js"
 import bcrypt from "bcrypt"
 import jwt from "jsonwebtoken"
 import dotenv from "dotenv"
+import { errorHandler } from "../utils/Error.js"
 dotenv.config()
 
 export const signUpCustomer = async(req, res) => {
@@ -19,17 +20,20 @@ export const signUpCustomer = async(req, res) => {
     }
 }  
 
-export const loginCustomer = async(req, res) => {
+export const loginCustomer = async(req, res, next) => {
     const {email, password} = req.body
     try {
         const customer = await Customer.findByCredentials(email,password)
+        if(!customer) {
+            return next(errorHandler(403, "invalid credentials"))
+        }
         const token = jwt.sign({_id: customer._id},process.env.JWT_SECRET)
 
         const {password : hashedPassword, ...rest} = customer._doc
         const expiryDate = new Date(Date.now() + 3600000)
         res.cookie('access_token',token, {httpOnly: true, expires: expiryDate}).status(200).json(rest)
     } catch (error) {
-        res.status(500).json("login failure")
+        next()
     }
 }
 

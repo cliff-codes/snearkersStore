@@ -1,10 +1,16 @@
+import axios from 'axios'
 import { Box, Button, Container, Input, InputBase, InputLabel, Typography, useMediaQuery, useTheme } from '@mui/material'
 import React, { useRef, useState } from 'react'
 import redSneakers from "../assets/readSneakers.png"
 import CameraAltIcon from '@mui/icons-material/CameraAlt';
-import {app} from '../firebase'
 import {getDownloadURL, getStorage, ref, uploadBytesResumable} from 'firebase/storage'
-import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import {app} from '../firebase'
+
+const axiosInstance = axios.create({
+    baseURL: 'http://localhost:3000',
+    withCredentials: true
+})
 
 const CreateStore = () => {
     const theme = useTheme()
@@ -12,8 +18,10 @@ const CreateStore = () => {
     const [storeCoverImg, setStoreCoverImg] = useState()
     const fileRef = useRef(null)
     const [formData, setFormData] = useState({})
+    const [coverImgUrl, setCoverImgUrl] = useState('')
     const [uploadPercentage, setuploadPercentage] = useState(0)
     const [uploadError, setuploadError] = useState()
+    const navigate = useNavigate()
 
     const handleFormData = (e) => {
         setFormData({...formData, [e.target.id] : e.target.value})
@@ -24,38 +32,22 @@ const CreateStore = () => {
     const handleSubmit = async() => {
         //store cover img in firestore
         handleImgUpload(formData.coverImg)
-        
     }
     console.log(uploadPercentage)
-    //handling image upload for coverImages.
-    // const handleImgUpload = (image) => {
-    //     const storage = getStorage(app)
-    //     const fileName = new Date().getTime() + image.name
-    //     const storageRef = ref(storage, fileName)
-    //     const uploadTask = uploadBytesResumable(storageRef, image)
-        
-
-    //     uploadTask.on(
-    //         'state_changed',
-    //         (snapshot) => {
-    //             const progress = (snapshot.bytesTransferred/ snapshot.totalBytes) * 100;
-    //             setuploadPercentage(Math.round(progress))
-                
-    //         },
-    //         (error) => {
-    //             setuploadError(error)   
-    //             console.log("Error uploading file: ", error)
-    //         },
-    //         () => {
-    //             getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
-    //                 setFormData({...formData, coverImg: downloadUrl})
-    //                 console.log(formData)
-    //             })
-    //         }
-    //     )
-    // }
-
-
+    
+    const createStore = async(data) => {
+        try {
+            const res = await axiosInstance.post('/api/v1/createStore', data)
+            console.log(res)
+            if(res.status === 201){
+                navigate('/')
+            }
+            console.log(res)
+        } catch (error) {
+            console.log("Error" , error)
+        }
+    }
+  
 
     const handleImgUpload = (image) => {
     const storage = getStorage(); // Remove 'app' from here, as it's not defined in your code
@@ -76,10 +68,14 @@ const CreateStore = () => {
         () => {
         getDownloadURL(storageRef).then((downloadUrl) => { // Pass the storage reference here
             setFormData({...formData, coverImg: downloadUrl});
-            console.log(formData);
+            setCoverImgUrl(downloadUrl)
+            console.log(formData)
+
+            //create store
+            createStore(formData)
         });
         }
-    );
+    ); 
     };
 
 
@@ -145,8 +141,11 @@ const CreateStore = () => {
                     textTransform: 'lowercase'
                 }}
                     disabled = {formData.storeName && formData.coverImg ? false : true}
-                    onClick={handleSubmit}
+                    onClick={() => {
+                        handleSubmit()
+                    }}
                 >create store</Button>
+                
             </Box>
         </Box>
         {!isSmallScreen ? <Box width={'50%'} minHeight={'500px'} height={'100%'} sx={{
