@@ -2,7 +2,8 @@ import express from "express"
 import dotenv from "dotenv"
 import mongoose from "mongoose"
 import { router as CustomerRouter } from "./routes/customerRoutes.js"
-import { router as storeRouter } from "./routes/storeRoutes.js"
+import {router as AdminRouter} from "./routes/adminRoutes.js"
+// import { router as storeRouter } from "./routes/storeRoutes.js"
 import cookieParser from "cookie-parser"
 import cors from "cors"
 
@@ -14,11 +15,12 @@ const app = express()
 app.use(cookieParser())
 app.use(express.json())
 app.use(cors({
-    origin: 'http://localhost:5173',
-    credentials: true,
+    origin: 'http://localhost:5173', 
+    credentials: true, 
   }));
 app.use('/api/v1',CustomerRouter)
-app.use('/api/v1', storeRouter)
+app.use('/api/v1', AdminRouter)
+// app.use('/api/v1', storeRouter)
 
 //error handler
 app.use((err, req, res, next) => {

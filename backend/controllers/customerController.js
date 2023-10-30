@@ -30,7 +30,7 @@ export const loginCustomer = async(req, res, next) => {
         const token = jwt.sign({_id: customer._id},process.env.JWT_SECRET)
 
         const {password : hashedPassword, ...rest} = customer._doc
-        const expiryDate = new Date(Date.now() + 3600000)
+        const expiryDate = new Date(Date.now() + 24 * 60 * 60 * 1000) // 24 hours in milliseconds
         res.cookie('access_token',token, {httpOnly: true, expires: expiryDate}).status(200).json(rest)
     } catch (error) {
         next()

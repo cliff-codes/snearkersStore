@@ -1,7 +1,7 @@
-import express from "express"
-import { createStore } from "../controllers/storeController.js"
-import { verifyCustomer } from "../utils/verifyCustomer.js"
+// import express from "express"
+// import { createStore } from "../controllers/storeController.js"
+// import { verifyCustomer } from "../utils/verifyCustomer.js"
 
-export const router = express.Router()
+// export const router = express.Router()
 
-router.post('/createStore',verifyCustomer, createStore) 
+// router.post('/createStore',verifyCustomer, createStore) 
