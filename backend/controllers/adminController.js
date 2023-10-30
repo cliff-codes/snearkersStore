@@ -40,3 +40,30 @@ export const updateAdmin = async(req,res,next) => {
         next(error)
     }
 }
+
+export const adminLogin = async(req,res,next) => {
+    console.log('working')
+    const {email, password} = req.body
+
+    try {
+        const admin = await Admin.findOne({email})
+
+        if(!admin){
+            errorHandler(401, "Invalid credentials")
+        }
+
+        const isMatch = bcrypt.compareSync(password, admin.password)
+
+        if(!isMatch){
+            errorHandler(401, "Invalid credentials")
+        }
+
+        const token = jwt.sign({_id: admin._id},process.env.JWT_SECRET)
+        const expiryDate = new Date(Date.now() + 3600000)
+        
+        res.cookie('access_token',token, {httpOnly: true, expires: expiryDate}).status(200).json(admin )
+
+    } catch (error) {
+        next(error)
+    }
+}
