@@ -7,6 +7,7 @@ import Error from "./pages/Error"
 import CreateStore from "./pages/CreateStore"
 import Login from "./pages/Login"
 import Store from "./pages/Store"
+import AdminLogin from "./pages/AdminLogin"
 function App() {
 
   return (
@@ -17,7 +18,8 @@ function App() {
         <Route path="/profile" element = {<Profile/>}/>
         <Route path="/sign-up" element = {<SignUp/>}/>
         <Route path="/login" element = {<Login/>}/>
-        <Route path="/create-store" element = {<CreateStore/>}/>
+        {/* <Route path="/create-store" element = {<CreateStore/>}/> */}
+        <Route path="/admin" element = {<AdminLogin/>}/>
         <Route path="/store" element = {<Store/>} />
         <Route path="*" element = {<Error/>}/>
       </Routes>
