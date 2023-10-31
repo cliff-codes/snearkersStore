@@ -1,13 +1,26 @@
-import { Box, Button, ButtonBase, Container, Typography } from '@mui/material'
+import { Box, Button, ButtonBase, Container, Typography,  } from '@mui/material'
 import React, { useState } from 'react'
 import AddIcon from '@mui/icons-material/Add'
-
+import { Modal } from '@mui/base/Modal'
+import AddProductModal from '../components/AddProductModal'
 
 const AdminLogin = () => {
     const [activeButton, setActiveButton] = useState(1)
+    const [openModal, setOpenModal] = useState(false)
+    const handleOpen = () => setOpenModal(true)
+    const handleClose = () => setOpenModal(false)
+
+    const modalStyle = {
+        display: "absolute",
+        width: "100%",
+        height: "100%",
+        top: "-300px",
+        background: "black",
+        opacity: ".2"
+    }
     
   return (
-    <Container>
+    <Container sx={{position: "relative"}}>
         <Box display={'flex'} justifyContent={'center'} mt={'24px'} gap={'8px'}>
             <ButtonBase sx={{
                 color: activeButton === 1 ? "white" : "secondary.main", 
@@ -71,13 +84,16 @@ const AdminLogin = () => {
                 }</Typography>
                 
                 {
-                    activeButton === 3 ? null : <Button sx={{bgcolor: "secondary.light"}}>
+                    activeButton === 3 ? null : <Button sx={{bgcolor: "secondary.light"}} onClick={handleOpen}>
                     <AddIcon/>  
                     </Button>
                 }
             </Box>
             <Box minHeight={'130px'} width={'100%'} bgcolor={'secondary.light'} borderRadius={'4px'}>
-
+                <AddProductModal 
+                    openModal={openModal}
+                    closePortal={handleClose}
+                />
             </Box>
         </Box>
     </Container>
