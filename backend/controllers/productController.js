@@ -1,8 +1,8 @@
-import { Product } from "../models/productModel";
+import { Product } from "../models/productModel.js";
 
 export const createProduct = async(req,res,next) => {
     const {name, category, price, description, isFeatured, qtyInStock} = req.body
-
+    console.log(req.body)
     const product = new Product({
         name,
         qtyInStock,
@@ -11,10 +11,12 @@ export const createProduct = async(req,res,next) => {
         description,
         isFeatured
     })
+    console.log("running ")
     try {
-        await product.save()
-        res.status(201).json(product)
+        const savedProduct = await product.save()
+        console.log(savedProduct)
+        res.status(201).json(savedProduct)
     } catch (error) {
-        next(error)
+        next(error) 
     }
 }

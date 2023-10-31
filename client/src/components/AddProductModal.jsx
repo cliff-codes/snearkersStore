@@ -53,10 +53,12 @@ export default function AddProductModal({openModal, closePortal}) {
   }) 
 
   const handleSubmit = async() => {
+    console.log('creating product')
     try {
-      const res = await axiosInstance.post()
+      const res = await axiosInstance.post('/api/v1/create-product', {name, description, price, qtyInStock})
+      console.log(res)
     } catch (error) {
-      
+      console.log(res)
     }
   }
 
@@ -176,6 +178,7 @@ export default function AddProductModal({openModal, closePortal}) {
                       }
                     }}
                       disabled = {!validData}
+                      onClick={handleSubmit}
                     >Add product</ButtonBase>
                   </form>
               </Box>

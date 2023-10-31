@@ -3,6 +3,7 @@ import dotenv from "dotenv"
 import mongoose from "mongoose"
 import { router as CustomerRouter } from "./routes/customerRoutes.js"
 import {router as AdminRouter} from "./routes/adminRoutes.js"
+import { router as ProductRouter } from "./routes/productRoutes.js"
 // import { router as storeRouter } from "./routes/storeRoutes.js"
 import cookieParser from "cookie-parser"
 import cors from "cors"
@@ -20,6 +21,7 @@ app.use(cors({
   }));
 app.use('/api/v1',CustomerRouter)
 app.use('/api/v1', AdminRouter)
+app.use('/api/v1', ProductRouter)
 // app.use('/api/v1', storeRouter)
 
 //error handler
