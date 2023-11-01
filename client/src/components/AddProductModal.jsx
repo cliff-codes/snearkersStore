@@ -11,6 +11,9 @@ import CameraAltIcon from '@mui/icons-material/CameraAlt';
 import { useState } from 'react';
 import axios from "axios"
 
+import {getDownloadURL, getStorage, ref, uploadBytesResumable} from 'firebase/storage'
+import {app} from '../firebase'
+
 
 export default function AddProductModal({openModal, closePortal}) {
 
@@ -19,8 +22,11 @@ export default function AddProductModal({openModal, closePortal}) {
   const [description, setDescription] = useState('')
   const [price, setPrice] = useState("")
   const [qtyInStock, setQtyInStock] = useState("")
-  const [images, setImages] = useState([])
+  const [images, setImages] = useState(null)
   const [validData, setValidData] = useState(false)
+  const [uploadPercentage, setuploadPercentage] = useState(0)
+  const [imageUrl, setImageUrl] = useState(null)
+  const [img, setImg] = useState('')
 
   const handleFormData = (e) => {
     if(e.target.id === "name"){
@@ -37,10 +43,11 @@ export default function AddProductModal({openModal, closePortal}) {
   console.log(name)
   console.log(images)
   console.log(validData)
+  console.log(imageUrl)
 
   //validate form input data
   const validateData = () =>{
-    if (name && price && description && qtyInStock && images.length > 0){
+    if (name && price && description && qtyInStock && images){
       setValidData(true)
     }else{
       setValidData(false)
@@ -55,13 +62,44 @@ export default function AddProductModal({openModal, closePortal}) {
   const handleSubmit = async() => {
     console.log('creating product')
     try {
-      const res = await axiosInstance.post('/api/v1/create-product', {name, description, price, qtyInStock})
+      const res = await axiosInstance.post('/api/v1/create-product', {name, description, price, qtyInStock, img})
       console.log(res)
     } catch (error) {
-      console.log(res)
+      console.log(res) 
     }
   }
 
+  const handleImageUpload = (image) => {
+    console.log('image upload is working')
+    const storage = getStorage(app)
+    const fileName = new Date().getTime() + image.name
+    const storageRef = ref(storage, fileName)
+    const uploadTask = uploadBytesResumable(storageRef, image)
+
+    uploadTask.on(
+      "state_changed",
+      (snapshot) => {
+        const progress = (snapshot.bytesTransferred/snapshot.totalBytes) * 100
+        setuploadPercentage(Math.round(progress))
+      },
+      (error) => {
+        console.log('Error uploading file', error)
+      },
+      () => {
+        getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
+          setImageUrl(downloadUrl)
+        })
+      }
+    )
+  }
+  console.log(uploadPercentage)
+  //make a post request.
+  React.useEffect(() => {
+    if(imageUrl){
+      setImg(imageUrl)
+      handleSubmit()
+    }
+  },[imageUrl])
   return (
     <div>
       {/* <TriggerButton onClick={handleOpen}>Open modal</TriggerButton> */}
@@ -154,7 +192,7 @@ export default function AddProductModal({openModal, closePortal}) {
                           alignItems: 'center'
                         }} onClick = {() => fileRef.current.click()} width={'185px'} height={'100px'} bgcolor={'secondary.light'} borderRadius={'4px'}>
                           <input type='file' id='images' ref={fileRef} hidden accept='image/*' onChange={(e) => {
-                            setImages((prev) => [...prev, e.target.files[0]])
+                            setImages(e.target.files[0])
                           }}/>
                           <Box display={'flex'} flexDirection={'column'} alignItems={'center'}>
                           <Typography fontSize={'14px'} variant='h7'>click to add image</Typography>
@@ -178,7 +216,9 @@ export default function AddProductModal({openModal, closePortal}) {
                       }
                     }}
                       disabled = {!validData}
-                      onClick={handleSubmit}
+                      onClick={() => {
+                        handleImageUpload(images)
+                      }}
                     >Add product</ButtonBase>
                   </form>
               </Box>
