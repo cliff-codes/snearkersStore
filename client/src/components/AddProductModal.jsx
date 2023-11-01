@@ -1,6 +1,6 @@
 import * as React from 'react';
 import PropTypes from 'prop-types';
-import { Box, styled, typography } from '@mui/system';
+import { Box, styled } from '@mui/system';
 import { Modal as BaseModal } from '@mui/base/Modal';
 import Fade from '@mui/material/Fade';
 import { Button } from '@mui/base/Button';
@@ -13,6 +13,9 @@ import axios from "axios"
 
 import {getDownloadURL, getStorage, ref, uploadBytesResumable} from 'firebase/storage'
 import {app} from '../firebase'
+import {addProductOnStart, addProductOnSucess, addProductOnFailure} from "../redux/product/productSlice"
+import { useDispatch, useSelector } from 'react-redux';
+
 
 
 export default function AddProductModal({openModal, closePortal}) {
@@ -27,6 +30,9 @@ export default function AddProductModal({openModal, closePortal}) {
   const [uploadPercentage, setuploadPercentage] = useState(0)
   const [imageUrl, setImageUrl] = useState(null)
   const [img, setImg] = useState('')
+  
+  const dispatch = useDispatch()
+  const loading = useSelector(state => state.product.loading)
 
   const handleFormData = (e) => {
     if(e.target.id === "name"){
@@ -64,13 +70,26 @@ export default function AddProductModal({openModal, closePortal}) {
     try {
       const res = await axiosInstance.post('/api/v1/create-product', {name, description, price, qtyInStock, img})
       console.log(res)
+      if(res.status === 201){
+        console.log(res.data)
+        dispatch(addProductOnSucess(res.data))
+        //close portal
+        closePortal()
+        
+      }else{
+        console.log(res)
+        dispatch(addProductOnFailure(res.data))
+      }
     } catch (error) {
-      console.log(res) 
+      dispatch(addProductOnFailure(error))
+      console.log(error)
     }
   }
 
   const handleImageUpload = (image) => {
-    console.log('image upload is working')
+    //set loading staate
+    dispatch(addProductOnStart())
+
     const storage = getStorage(app)
     const fileName = new Date().getTime() + image.name
     const storageRef = ref(storage, fileName)
@@ -219,7 +238,11 @@ export default function AddProductModal({openModal, closePortal}) {
                       onClick={() => {
                         handleImageUpload(images)
                       }}
-                    >Add product</ButtonBase>
+                    >
+                      {
+                        loading ? <CircularProgress size={'16px'}/> : 'Add product'
+                      }
+                    </ButtonBase>
                   </form>
               </Box>
           </ModalContent>
@@ -286,7 +309,7 @@ const style = {
   top: '50%',
   left: '50%',
   transform: 'translate(-50%, -50%)',
-  width: 400,
+  // width: 400,
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',

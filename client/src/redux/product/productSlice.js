@@ -26,5 +26,5 @@ export const productSlice = createSlice({
 
 export default productSlice.reducer
 
-const {addProductOnStart, addProductOnSucess, addProductOnFailure} = productSlice.actions
+export const {addProductOnStart, addProductOnSucess, addProductOnFailure} = productSlice.actions
 
