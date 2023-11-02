@@ -1,14 +1,22 @@
-import { Box, Button, ButtonBase, Container, Typography,  } from '@mui/material'
-import React, { useState } from 'react'
+import { Box, Button, ButtonBase, Container, Typography, CircularProgress } from '@mui/material'
+import React, { useEffect, useState } from 'react'
 import AddIcon from '@mui/icons-material/Add'
 import { Modal } from '@mui/base/Modal'
 import AddProductModal from '../components/AddProductModal'
+import { fetchProductStart, fetchProductSucess, fetchProductFailure } from '../redux/product/productSlice'
+import { useDispatch, useSelector } from 'react-redux'
+import axios from 'axios'
+import AdminProductCard from './AdminProductCard'
+
 
 const AdminLogin = () => {
     const [activeButton, setActiveButton] = useState(1)
     const [openModal, setOpenModal] = useState(false)
+    const dispatch = useDispatch()
     const handleOpen = () => setOpenModal(true)
     const handleClose = () => setOpenModal(false)
+
+    const productsLoading = useSelector(state => state.product.dataLoading)
 
     const modalStyle = {
         display: "absolute",
@@ -18,6 +26,31 @@ const AdminLogin = () => {
         background: "black",
         opacity: ".2"
     }
+
+    const axiosInstance = axios.create({
+        baseURL: 'http://localhost:3000',
+        withCredentials: true
+    })
+
+    useEffect(() => {
+        const getProducts = async() => {
+            try {
+                dispatch(fetchProductStart())
+                const response = await axiosInstance.get('/api/v1/products')
+                // const {data} = await response
+                // console.log(data)
+                 const {data} = response
+                console.log(data)
+                if(response.status === 200){
+                    dispatch(fetchProductSucess(data))
+                }
+            } catch (error) {
+                console.log(error)
+                dispatch(fetchProductFailure(error))
+            }
+        }
+        getProducts()
+    },[])
     
   return (
     <Container sx={{position: "relative"}}>
@@ -89,7 +122,15 @@ const AdminLogin = () => {
                     </Button>
                 }
             </Box>
-            <Box minHeight={'130px'} width={'100%'} bgcolor={'secondary.light'} borderRadius={'4px'}>
+            <Box minHeight={'130px'} width={'100%'} 
+            bgcolor={'secondary.light'} borderRadius={'4px'} p={'4px'} >
+                {
+                    productsLoading ? <Box display={'flex'} justifyContent={'center'} alignItems={'center'} minHeight={'100%'}  height={'130px'}>
+                        <CircularProgress size={'22px'} />
+                    </Box> : <Box>
+                        <AdminProductCard/>
+                    </Box>
+                }
                 <AddProductModal 
                     openModal={openModal}
                     closePortal={handleClose}

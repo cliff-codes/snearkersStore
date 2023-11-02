@@ -120,6 +120,7 @@ export default function AddProductModal({openModal, closePortal}) {
   React.useEffect(() => {
       setImg(imageUrl)
       if(img){
+        console.log('code is working')
         handleSubmit()  
       }
   },[imageUrl])

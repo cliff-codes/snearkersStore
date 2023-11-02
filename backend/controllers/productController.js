@@ -20,3 +20,12 @@ export const createProduct = async(req,res,next) => {
         next(error) 
     }
 }
+
+export const getAllProducts = async(req,res,next) => {
+    try {
+        const data = await Product.find({})
+        res.status(200).json(data)
+    } catch (error) {
+        next(error)
+    }
+}

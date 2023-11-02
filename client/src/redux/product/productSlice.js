@@ -1,10 +1,15 @@
 import {createSlice} from '@reduxjs/toolkit'
 
+
 const initialState = {
     loading: false,
     product: null,
-    error: false
+    error: false,
+    dataLoading: false,
+    data: null,
+    dataFailure: false
 }
+
 
 export const productSlice = createSlice({
     name: "product",
@@ -20,11 +25,22 @@ export const productSlice = createSlice({
         addProductOnFailure: (state, action) => {
             state.loading = false,
             state.error = action.payload
+        },
+        fetchProductStart: (state) => {
+            state.dataLoading = true
+        },
+        fetchProductSucess: (state, action) => {
+            state.dataLoading = false
+            state.data = action.payload
+        },
+        fetchProductFailure: (state, action) => {
+            state.dataLoading = false
+            state.dataFailure = action.payload
         }
     }
 })
 
 export default productSlice.reducer
 
-export const {addProductOnStart, addProductOnSucess, addProductOnFailure} = productSlice.actions
+export const {addProductOnStart, addProductOnSucess, addProductOnFailure, fetchProductStart, fetchProductSucess, fetchProductFailure} = productSlice.actions
 
