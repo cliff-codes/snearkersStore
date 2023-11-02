@@ -44,7 +44,7 @@ export default function AddProductModal({openModal, closePortal}) {
     }else if(e.target.id === "qtyInStock"){
       setQtyInStock(e.target.value)
     }
-    validateData()
+    // validateData()
   }
   console.log(name)
   console.log(images)
@@ -59,6 +59,10 @@ export default function AddProductModal({openModal, closePortal}) {
       setValidData(false)
     }
   }
+
+  React.useEffect(() => {
+      validateData()
+  },[name, price, description, qtyInStock, images])
 
   const axiosInstance = axios.create({
     baseURL: 'http://localhost:3000',
@@ -114,10 +118,10 @@ export default function AddProductModal({openModal, closePortal}) {
   console.log(uploadPercentage)
   //make a post request.
   React.useEffect(() => {
-    if(imageUrl){
       setImg(imageUrl)
-      handleSubmit()
-    }
+      if(img){
+        handleSubmit()  
+      }
   },[imageUrl])
   return (
     <div>
