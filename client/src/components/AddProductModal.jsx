@@ -13,7 +13,7 @@ import axios from "axios"
 
 import {getDownloadURL, getStorage, ref, uploadBytesResumable} from 'firebase/storage'
 import {app} from '../firebase'
-import {addProductOnStart, addProductOnSucess, addProductOnFailure} from "../redux/product/productSlice"
+import {addProductOnStart, addProductOnSucess, addProductOnFailure, addProductOnSucessUpdate} from "../redux/product/productSlice"
 import { useDispatch, useSelector } from 'react-redux';
 
 
@@ -77,6 +77,7 @@ export default function AddProductModal({openModal, closePortal}) {
       if(res.status === 201){
         console.log(res.data)
         dispatch(addProductOnSucess(res.data))
+        dispatch(addProductOnSucessUpdate(res.data))
         //close portal
         closePortal()
         
@@ -111,6 +112,7 @@ export default function AddProductModal({openModal, closePortal}) {
       () => {
         getDownloadURL(uploadTask.snapshot.ref).then((downloadUrl) => {
           setImageUrl(downloadUrl)
+          setImg(downloadUrl)
         })
       }
     )
@@ -118,12 +120,10 @@ export default function AddProductModal({openModal, closePortal}) {
   console.log(uploadPercentage)
   //make a post request.
   React.useEffect(() => {
-      setImg(imageUrl)
-      if(img){
-        console.log('code is working')
-        handleSubmit()  
-      }
-  },[imageUrl])
+    console.log('code is working')
+    handleSubmit()  
+  },[img])
+
   return (
     <div>
       {/* <TriggerButton onClick={handleOpen}>Open modal</TriggerButton> */}

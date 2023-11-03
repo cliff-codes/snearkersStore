@@ -22,6 +22,9 @@ export const productSlice = createSlice({
             state.loading = false,
             state.product = action.payload
         },
+        addProductOnSucessUpdate: (state, action) => {
+            state.data = [...state.data, action.payload]
+        },
         addProductOnFailure: (state, action) => {
             state.loading = false,
             state.error = action.payload
@@ -42,5 +45,5 @@ export const productSlice = createSlice({
 
 export default productSlice.reducer
 
-export const {addProductOnStart, addProductOnSucess, addProductOnFailure, fetchProductStart, fetchProductSucess, fetchProductFailure} = productSlice.actions
+export const {addProductOnStart, addProductOnSucess, addProductOnFailure, fetchProductStart, fetchProductSucess, fetchProductFailure, addProductOnSucessUpdate} = productSlice.actions
 

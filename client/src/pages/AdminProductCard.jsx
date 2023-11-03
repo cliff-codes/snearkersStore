@@ -31,10 +31,12 @@ const AdminProductCard = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {rows.map(row => (
+                        { rows.map(row => (
                             <TableRow 
                                 key={row.name}
-                                sx={{ '&:last-child td, &:last-child th': { border: 0 }, ":hover": {
+                                sx={{ '&:last-child td, &:last-child th': { border: 0 },
+                                transition: 'all .1s ease', 
+                                ":hover": {
                                     bgcolor: "white"
                                 }}}
                             >
